@@ -69,7 +69,7 @@ local function checkKey(key)
 end
 
 local function executeMainScript()
-    loadstring(game:HttpGet('https://raw.githubusercontent.com/sectve/syntax/main/main'))(),
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/sectve/syntax/main/main'))()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/sectve/syntax/main/cam'))()
 end
 
