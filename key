@@ -57,7 +57,7 @@ uiGradientButton.Color = ColorSequence.new{
 }
 uiGradientButton.Parent = submitButton
 
-local validKeys = { "syntax" }
+local validKeys = { "slol" }
 
 local function checkKey(key)
     for _, v in pairs(validKeys) do
