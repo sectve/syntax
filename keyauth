@@ -1,0 +1,89 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 300, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame.BackgroundTransparency = 0.3
+mainFrame.BorderSizePixel = 2
+mainFrame.BorderColor3 = Color3.fromRGB(0, 128, 255)
+mainFrame.Parent = screenGui
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+titleLabel.BorderSizePixel = 0
+titleLabel.Text = "Syntax Key System"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 28
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.Parent = mainFrame
+
+local uiGradient = Instance.new("UIGradient")
+uiGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 128, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 30))
+}
+uiGradient.Parent = titleLabel
+
+local keyTextBox = Instance.new("TextBox")
+keyTextBox.Size = UDim2.new(1, -20, 0, 30)
+keyTextBox.Position = UDim2.new(0, 10, 0, 60)
+keyTextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+keyTextBox.BorderSizePixel = 0
+keyTextBox.Text = "Enter Key"
+keyTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+keyTextBox.TextSize = 20
+keyTextBox.Font = Enum.Font.SourceSans
+keyTextBox.Parent = mainFrame
+
+local submitButton = Instance.new("TextButton")
+submitButton.Size = UDim2.new(1, -20, 0, 40)
+submitButton.Position = UDim2.new(0, 10, 0, 100)
+submitButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
+submitButton.BorderSizePixel = 0
+submitButton.Text = "Submit"
+submitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+submitButton.TextSize = 22
+submitButton.Font = Enum.Font.SourceSansBold
+submitButton.Parent = mainFrame
+
+local uiGradientButton = Instance.new("UIGradient")
+uiGradientButton.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 128, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 30))
+}
+uiGradientButton.Parent = submitButton
+
+local validKeys = { "slol" }
+
+local function checkKey(key)
+    for _, v in pairs(validKeys) do
+        if key == v then
+            return true
+        end
+    end
+    return false
+end
+
+local function executeMainScript()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/sectve/syntax/main/main'))()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/sectve/syntax/main/cam'))()
+end
+
+local function onSubmit()
+    local enteredKey = keyTextBox.Text
+    
+    if checkKey(enteredKey) then
+        keyTextBox.Text = "Authorised!"
+        wait(1)
+        executeMainScript()
+        screenGui:Destroy()  -- Close the GUI after authorization
+    else
+        keyTextBox.Text = "Wrong Key!"
+    end
+end
+
+submitButton.MouseButton1Click:Connect(onSubmit)
