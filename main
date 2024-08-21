@@ -1,0 +1,121 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 250, 0, 150)
+mainFrame.Position = UDim2.new(0, 10, 0, 10)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame.BackgroundTransparency = 0.3
+mainFrame.BorderSizePixel = 2
+mainFrame.BorderColor3 = Color3.fromRGB(0, 128, 255)
+mainFrame.Parent = screenGui
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+titleLabel.BorderSizePixel = 0
+titleLabel.Text = "Syntax"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 28
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.Parent = mainFrame
+
+local uiGradient = Instance.new("UIGradient")
+uiGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 128, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 30))
+}
+uiGradient.Parent = titleLabel
+
+local usernameTextBox = Instance.new("TextBox")
+usernameTextBox.Size = UDim2.new(1, -20, 0, 30)
+usernameTextBox.Position = UDim2.new(0, 10, 0, 50)
+usernameTextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+usernameTextBox.BorderSizePixel = 0
+usernameTextBox.Text = "Enter Username"
+usernameTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+usernameTextBox.TextSize = 20
+usernameTextBox.Font = Enum.Font.SourceSans
+usernameTextBox.Parent = mainFrame
+
+local targetButton = Instance.new("TextButton")
+targetButton.Size = UDim2.new(1, -20, 0, 40)
+targetButton.Position = UDim2.new(0, 10, 0, 90)
+targetButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
+targetButton.BorderSizePixel = 0
+targetButton.Text = "Target"
+targetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+targetButton.TextSize = 22
+targetButton.Font = Enum.Font.SourceSansBold
+targetButton.Parent = mainFrame
+
+local uiGradientButton = Instance.new("UIGradient")
+uiGradientButton.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 128, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 30))
+}
+uiGradientButton.Parent = targetButton
+
+local holding = false
+local following = false
+local targetPlayer = nil
+
+local function followAndCharge()
+    local username = usernameTextBox.Text
+    targetPlayer = game.Players:FindFirstChild(username)
+    local localPlayer = game.Players.LocalPlayer
+    local character = localPlayer.Character
+    local backpack = localPlayer.Backpack
+    
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local combatTool = backpack:FindFirstChild("Combat")
+        if combatTool then
+            combatTool.Parent = character
+            character:FindFirstChildOfClass("Humanoid"):EquipTool(combatTool)
+        else
+            print("Combat tool not found in Backpack")
+            return
+        end
+        
+        holding = true
+        following = true
+        
+        while holding do
+            if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") and
+                localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                
+                local targetPosition = targetPlayer.Character.HumanoidRootPart.Position
+                localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, -5, 0))
+                
+                local args = {
+                    [1] = "ChargeButton"
+                }
+                game:GetService("ReplicatedStorage").MainEvent:FireServer(unpack(args))
+
+                local humanoid = targetPlayer.Character:FindFirstChild("Humanoid")
+                local bodyEffects = targetPlayer.Character:FindFirstChild("BodyEffects")
+                local movement = bodyEffects and bodyEffects:FindFirstChild("Movement")
+                if humanoid and humanoid.Health <= 0 then
+                    localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
+                    following = false
+                    break
+                elseif movement and movement:FindFirstChild("K.O") then
+                    following = false
+                    break
+                end
+            end
+            wait(0.01)
+        end
+    else
+        print("Player not found or invalid target")
+    end
+end
+
+local function stopFollowing()
+    holding = false
+    following = false
+end
+
+targetButton.MouseButton1Down:Connect(followAndCharge)
+targetButton.MouseButton1Up:Connect(stopFollowing)
