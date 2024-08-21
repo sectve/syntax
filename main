@@ -62,18 +62,27 @@ local targetPlayer = nil
 
 local function stompPlayer()
     if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local humanoid = targetPlayer.Character:FindFirstChild("Humanoid")
+        local bodyEffects = targetPlayer.Character:FindFirstChild("BodyEffects")
+        local movement = bodyEffects and bodyEffects:FindFirstChild("Movement")
         local targetPosition = targetPlayer.Character.HumanoidRootPart.Position
 
-        -- Teleport to the target
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
+        -- Teleport directly on top of the target
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 2, 0))
 
-        -- Stomp 3 times every 3 seconds
-        for i = 1, 3 do
-            local args = {
-                [1] = "Stomp"
-            }
-            game:GetService("ReplicatedStorage").MainEvent:FireServer(unpack(args))
-            wait(1) -- Wait 1 second between stomps
+        -- Check health and perform stomp if conditions are met
+        while true do
+            if humanoid and humanoid.Health <=4 then
+                for i = 1, 3 do
+                    local args = {
+                        [1] = "Stomp"
+                    }
+                    game:GetService("ReplicatedStorage").MainEvent:FireServer(unpack(args))
+                    wait(1) -- Wait 1 second between stomps
+                end
+                break
+            end
+            wait(1) -- Check health every 1 second
         end
     end
 end
