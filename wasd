@@ -1,0 +1,88 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = playerGui
+screenGui.ResetOnSpawn = false
+
+local function createButton(parent, text, position, size, bgColor, highlightColor)
+    local button = Instance.new("TextButton")
+    button.Parent = parent
+    button.Text = text
+    button.BackgroundColor3 = bgColor
+    button.Size = size
+    button.Position = position
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.Gotham
+    button.TextScaled = true
+    button.BorderSizePixel = 0
+    button.AutoButtonColor = false
+
+    local uicorner = Instance.new("UICorner")
+    uicorner.CornerRadius = UDim.new(0.2, 0)  -- Rounded corners
+    uicorner.Parent = button
+
+    button.MouseButton1Down:Connect(function()
+        button.BackgroundColor3 = highlightColor
+    end)
+
+    button.MouseButton1Up:Connect(function()
+        button.BackgroundColor3 = bgColor
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            button.BackgroundColor3 = bgColor
+        end
+    end)
+
+    return button
+end
+
+local layoutFrame = Instance.new("Frame")
+layoutFrame.Parent = screenGui
+layoutFrame.Size = UDim2.new(0.1, 0, 0.25, 0)
+layoutFrame.Position = UDim2.new(0.01, 0, 0.01, 0)
+layoutFrame.BackgroundTransparency = 1
+
+local baseColor = Color3.fromRGB(60, 60, 60)  -- Aesthetic dark grey
+local highlightColor = Color3.fromRGB(255, 183, 77)  -- Soft orange highlight
+
+local wButton = createButton(layoutFrame, "W", UDim2.new(0.3, 0, 0, 0), UDim2.new(0.4, 0, 0.2, 0), baseColor, highlightColor)
+local aButton = createButton(layoutFrame, "A", UDim2.new(0, 0, 0.25, 0), UDim2.new(0.4, 0, 0.2, 0), baseColor, highlightColor)
+local sButton = createButton(layoutFrame, "S", UDim2.new(0.3, 0, 0.25, 0), UDim2.new(0.4, 0, 0.2, 0), baseColor, highlightColor)
+local dButton = createButton(layoutFrame, "D", UDim2.new(0.6, 0, 0.25, 0), UDim2.new(0.4, 0, 0.2, 0), baseColor, highlightColor)
+local spaceButton = createButton(layoutFrame, "Space", UDim2.new(0.1, 0, 0.5, 0), UDim2.new(0.8, 0, 0.2, 0), baseColor, highlightColor)
+
+local function handleInput(input, keyCode, button)
+    if input.KeyCode == keyCode then
+        button.BackgroundColor3 = highlightColor
+        wait(0.1)
+        button.BackgroundColor3 = baseColor
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input)
+    handleInput(input, Enum.KeyCode.W, wButton)
+    handleInput(input, Enum.KeyCode.A, aButton)
+    handleInput(input, Enum.KeyCode.S, sButton)
+    handleInput(input, Enum.KeyCode.D, dButton)
+    handleInput(input, Enum.KeyCode.Space, spaceButton)
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.W then
+        wButton.BackgroundColor3 = baseColor
+    elseif input.KeyCode == Enum.KeyCode.A then
+        aButton.BackgroundColor3 = baseColor
+    elseif input.KeyCode == Enum.KeyCode.S then
+        sButton.BackgroundColor3 = baseColor
+    elseif input.KeyCode == Enum.KeyCode.D then
+        dButton.BackgroundColor3 = baseColor
+    elseif input.KeyCode == Enum.KeyCode.Space then
+        spaceButton.BackgroundColor3 = baseColor
+    end
+end)
